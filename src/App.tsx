@@ -178,8 +178,6 @@ function DCASim(){
   const dcaROI = invested>0? (last.dcaValue/invested - 1):0;
   const lumpROI = invested>0? (last.lumpValue/invested - 1):0;
 
-  const csv = [["Date","DCA Value","Lump Value","BTC Bought","BTC Cumulative"], *[[(r.date),(r.dcaValue).toFixed(2),(r.lumpValue).toFixed(2),(r.btcBought).toFixed(8),(r.btcAccum).toFixed(8)] for r in series]];
-
   const exportCSV = () => {
     const rows = [
       ["Date","DCA Value","Lump Value","BTC Bought","BTC Cumulative"],
@@ -230,7 +228,7 @@ function DCASim(){
           <h4 style={{margin:"0 0 8px 0"}}>DCA vs Lump Sum (ROI)</h4>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={[{name:"DCA", roi:dcaROI}, {name:"Lump", roi:lumpROI}]}> 
-              <CartesianGrid vertical={False} stroke="#2a2a2a"/>
+              <CartesianGrid vertical={false} stroke="#2a2a2a"/>
               <XAxis dataKey="name"/>
               <YAxis tickFormatter={(v)=>`${(v*100).toFixed(0)}%`}/>
               <Tooltip formatter={(v:number)=>pct(v)} />
