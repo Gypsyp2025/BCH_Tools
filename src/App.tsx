@@ -192,7 +192,9 @@ const exportCSV = () => {
   const blob = new Blob([rows.map(r => r.join(",")).join("\n")], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = "bch_dca_breakdown.csv"; a.click();
+  a.href = url;
+  a.download = "bch_dca_breakdown.csv";
+  a.click();
   URL.revokeObjectURL(url);
 };
 
