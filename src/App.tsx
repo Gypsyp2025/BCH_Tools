@@ -60,6 +60,34 @@ function TabBtn({active, children, onClick}:{active:boolean, children:React.Reac
   return <button onClick={onClick} className={"btn"+(active?" active":"")}>{children}</button>;
 }
 
+// ---------- Shared tiny UI ----------
+function Field({label, children}:{label:string, children:React.ReactNode}){
+  return (<label style={{display:"block", marginBottom:10}}>
+    <div style={{fontSize:12, opacity:.8, marginBottom:6}}>{label}</div>{children}
+  </label>);
+}
+function Segment<T extends string>({value,onChange,options}:{value:T,onChange:(v:T)=>void,options:T[]}){
+  return <div style={{display:"flex", gap:8, flexWrap:"wrap", marginBottom:10}}>
+    {options.map(o=>(<button key={o} onClick={()=>onChange(o)} style={{padding:"8px 10px", borderRadius:10, border:"1px solid #444", background:value===o?"#fff":"#111", color:value===o?"#000":"#fff"}}>{o}</button>))}
+  </div>;
+}
+function Select<T extends string>({value,onChange,options}:{value:T,onChange:(v:T)=>void,options:T[]}){
+  return <select value={value} onChange={e=>onChange(e.target.value as T)} style={{width:"100%", padding:"10px 12px", borderRadius:10, background:"#0f0f0f", color:"#fff", border:"1px solid #444"}}>
+    {options.map(o=>(<option key={o} value={o}>{o}</option>))}
+  </select>;
+}
+function Number({value,onChange,min=0,max=1e9,step=1}:{value:number,onChange:(n:number)=>void,min?:number,max?:number,step?:number}){
+  return <input type="number" value={value} min={min} max={max} step={step} onChange={e=>onChange(parseFloat(e.target.value || "0"))}
+          style={{width:"100%", padding:"10px 12px", borderRadius:10, background:"#0f0f0f", color:"#fff", border:"1px solid #444"}}/>;
+}
+function Stat({title, value, sub}:{title:string, value:string, sub?:string}){
+  return (<div className="card">
+    <div style={{opacity:.75,fontSize:12}}>{title}</div>
+    <div style={{fontWeight:700,fontSize:18}}>{value}</div>
+    {sub && <div style={{opacity:.6,fontSize:12, marginTop:4}}>{sub}</div>}
+  </div>);
+}
+
 // ---------- Style Quiz ----------
 function StyleQuiz({onRoute}:{onRoute:(t:Tab)=>void}){
   const [horizon, setHorizon] = useState<"Short"|"Medium"|"Long">("Long");
@@ -121,22 +149,6 @@ function StyleQuiz({onRoute}:{onRoute:(t:Tab)=>void}){
   );
 }
 
-function Field({label, children}:{label:string, children:React.ReactNode}){
-  return (<label style={{display:"block", marginBottom:10}}>
-    <div style={{fontSize:12, opacity:.8, marginBottom:6}}>{label}</div>{children}
-  </label>);
-}
-function Segment<T extends string>({value,onChange,options}:{value:T,onChange:(v:T)=>void,options:T[]}){
-  return <div style={{display:"flex", gap:8, flexWrap:"wrap", marginBottom:10}}>
-    {options.map(o=>(<button key={o} onClick={()=>onChange(o)} style={{padding:"8px 10px", borderRadius:10, border:"1px solid #444", background:value===o?"#fff":"#111", color:value===o?"#000":"#fff"}}>{o}</button>))}
-  </div>;
-}
-function Select<T extends string>({value,onChange,options}:{value:T,onChange:(v:T)=>void,options:T[]}){
-  return <select value={value} onChange={e=>onChange(e.target.value as T)} style={{width:"100%", padding:"10px 12px", borderRadius:10, background:"#0f0f0f", color:"#fff", border:"1px solid #444"}}>
-    {options.map(o=>(<option key={o} value={o}>{o}</option>))}
-  </select>;
-}
-
 // ---------- DCA Simulator ----------
 function DCASim(){
   const [currency,setCurrency] = useState("USD");
@@ -178,25 +190,23 @@ function DCASim(){
   const dcaROI = invested>0? (last.dcaValue/invested - 1):0;
   const lumpROI = invested>0? (last.lumpValue/invested - 1):0;
 
-const exportCSV = () => {
-  const rows = [
-    ["Date","DCA Value","Lump Value","BTC Bought","BTC Cumulative"],
-    ...series.map(r => [
-      r.date,
-      r.dcaValue.toFixed(2),
-      r.lumpValue.toFixed(2),
-      r.btcBought.toFixed(8),
-      r.btcAccum.toFixed(8)
-    ])
-  ];
-  const blob = new Blob([rows.map(r => r.join(",")).join("\n")], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "bch_dca_breakdown.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-};
+  const exportCSV = () => {
+    const rows = [
+      ["Date","DCA Value","Lump Value","BTC Bought","BTC Cumulative"],
+      ...series.map(r => [
+        r.date,
+        r.dcaValue.toFixed(2),
+        r.lumpValue.toFixed(2),
+        r.btcBought.toFixed(8),
+        r.btcAccum.toFixed(8)
+      ])
+    ];
+    const blob = new Blob([rows.map(r => r.join(",")).join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "bch_dca_breakdown.csv"; a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div style={{display:"grid", gap:16, gridTemplateColumns:"320px 1fr"}}>
@@ -307,17 +317,4 @@ function ProfitCalc(){
       </div>
     </div>
   );
-}
-
-function Stat({title, value, sub}:{title:string, value:string, sub?:string}){
-  return (<div className="card"><div style={{opacity:.75,fontSize:12}}>{title}</div><div style={{fontWeight:700,fontSize:18}}>{value}</div>{sub && <div style={{opacity:.6,fontSize:12, marginTop:4}}>{sub}</div>}</div>);
-}
-function Field({label, children}:{label:string, children:React.ReactNode}){
-  return (<label style={{display:"block", marginBottom:10}}>
-    <div style={{fontSize:12, opacity:.8, marginBottom:6}}>{label}</div>{children}
-  </label>);
-}
-function Number({value,onChange,min=0,max=1e9,step=1}:{value:number,onChange:(n:number)=>void,min?:number,max?:number,step?:number}){
-  return <input type="number" value={value} min={min} max={max} step={step} onChange={e=>onChange(parseFloat(e.target.value || "0"))}
-          style={{width:"100%", padding:"10px 12px", borderRadius:10, background:"#0f0f0f", color:"#fff", border:"1px solid #444"}}/>;
 }
