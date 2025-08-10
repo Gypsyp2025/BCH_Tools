@@ -178,16 +178,23 @@ function DCASim(){
   const dcaROI = invested>0? (last.dcaValue/invested - 1):0;
   const lumpROI = invested>0? (last.lumpValue/invested - 1):0;
 
-  const exportCSV = () => {
-    const rows = [
-      ["Date","DCA Value","Lump Value","BTC Bought","BTC Cumulative"],
-      *series.map(r=>[r.date, r.dcaValue.toFixed(2), r.lumpValue.toFixed(2), r.btcBought.toFixed(8), r.btcAccum.toFixed(8)])
-    ];
-    const blob = new Blob([rows.map(r=>r.join(",")).join("\n")], {type:"text/csv"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = "bch_dca_breakdown.csv"; a.click(); URL.revokeObjectURL(url);
-  };
+const exportCSV = () => {
+  const rows = [
+    ["Date","DCA Value","Lump Value","BTC Bought","BTC Cumulative"],
+    ...series.map(r => [
+      r.date,
+      r.dcaValue.toFixed(2),
+      r.lumpValue.toFixed(2),
+      r.btcBought.toFixed(8),
+      r.btcAccum.toFixed(8)
+    ])
+  ];
+  const blob = new Blob([rows.map(r => r.join(",")).join("\n")], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "bch_dca_breakdown.csv"; a.click();
+  URL.revokeObjectURL(url);
+};
 
   return (
     <div style={{display:"grid", gap:16, gridTemplateColumns:"320px 1fr"}}>
