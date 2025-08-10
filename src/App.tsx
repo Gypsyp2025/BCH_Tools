@@ -293,7 +293,7 @@ function ProfitCalc(){
           <h4 style={{margin:"0 0 8px 0"}}>Profit/Loss Scenarios</h4>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={whatIf.map(w=>({name:w.label, val: (qty*w.val*(1-exitFee/100) - initial)}))}>
-              <CartesianGrid vertical={False} stroke="#2a2a2a"/>
+              <CartesianGrid vertical={false} stroke="#2a2a2a"/>
               <XAxis dataKey="name"/><YAxis/>
               <Tooltip formatter={(v:number)=>fmt(v)}/>
               <Bar dataKey="val">
